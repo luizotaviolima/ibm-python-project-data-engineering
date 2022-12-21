@@ -3,7 +3,7 @@
 import os
 import requests
 from zipfile import ZipFile
-
+from modules import libs
 
 # Download zip file and Save it into the data raw directory
 Url = "https://cf-courses-data.s3.us.cloud-object-storage.appdomain.cloud/IBMDeveloperSkillsNetwork-PY0221EN-SkillsNetwork/labs/module%206/Lab%20-%20Extract%20Transform%20Load/data/source.zip"
@@ -19,7 +19,23 @@ with open(filePath, "wb") as output:
     output.write(response.content)
 
 # Unzipping file
-directoryFile = os.path.join(cwd, "data/raw")
+directoryFile = os.path.join(cwd, "data/raw/")
 with ZipFile(filePath, "r") as zipObject:
     zipObject.extractall(directoryFile)
 os.remove(filePath)
+
+# ETL PROCESS
+#-----------------------------------------------------------------------------------
+
+# EXTRACTION
+df = libs.extract() # Extraction
+
+# TRANSFORMATION
+transformedData = libs.transform(df)
+
+# LOADING
+
+targetFileName = "processed_data.csv"
+targetPath = os.path.join(cwd, "data/processed", targetFileName)
+
+libs.loading(targetPath, transformedData)
